@@ -1,0 +1,2 @@
+#!/bin/sh
+exec alacritty -e doas -u asd $SHELL -c "cd && exec $SHELL --login"
