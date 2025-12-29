@@ -1,26 +1,28 @@
 #!/usr/bin/env bash
 
-: ${GPU:=1}
+: "${GPU:=1}"
 
-set -o errexit -o nounset -o pipefail
+set -o errexit
 
-if [[ -f /sys/class/drm/card$GPU/device/power_dpm_force_performance_level ]]; then
-    doas tee /sys/class/drm/card$GPU/device/power_dpm_force_performance_level <<< low
+if type -p doas tee; then
+    if [[ -f "/sys/class/drm/card$GPU/device/power_dpm_force_performance_level" ]]; then
+        doas tee "/sys/class/drm/card$GPU/device/power_dpm_force_performance_level" <<< 'low'
+    fi
+    if [[ -f "/sys/class/backlight/amdgpu_bl$GPU/brightness" ]]; then
+        doas tee "/sys/class/backlight/amdgpu_bl$GPU/brightness" < "/sys/class/backlight/amdgpu_bl$GPU/max_brightness"
+    fi
 fi
 
-if [[ -f /sys/class/backlight/amdgpu_bl$GPU/brightness ]]; then
-    doas tee /sys/class/backlight/amdgpu_bl$GPU/brightness < /sys/class/backlight/amdgpu_bl$GPU/max_brightness
-fi
-
-if which hsetroot; then
+if type -p hsetroot; then
     hsetroot -solid '#000000'
 fi
 
-if which xrandr; then
-    if xrandr | grep eDP; then
-        xrandr --output eDP --auto
-        if xrandr | grep HDMI-A-0; then
-            xrandr --output HDMI-A-0 --same-as eDP --mode 1920x1080
+if type -p xrandr; then
+    XRANDR_STATE="$(xrandr --query)"
+    if [[ "$XRANDR_STATE" =~ (^|[[:space:]])eDP([[:space:]]|$) ]]; then
+        xrandr --output 'eDP' --mode '1920x1080'
+        if [[ "$XRANDR_STATE" =~ (^|[[:space:]])HDMI-A-0([[:space:]]|$) ]]; then
+            xrandr --output 'HDMI-A-0' --same-as 'eDP' --mode '1920x1080'
         fi
     fi
 fi

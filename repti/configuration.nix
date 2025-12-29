@@ -4,13 +4,14 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
+    acpitool
     bat bc bridge-utils
     cabextract cdrkit cpufrequtils cryptsetup
     dmidecode dnsutils dos2unix
     edid-decode efibootmgr ethtool exfat
     fd feh file
     git gnumake gnuplot gnupg gptfdisk
-    htop hsetroot
+    htop
     igrep iptables iotop
     jq
     lm_sensors lsof

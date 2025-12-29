@@ -39,15 +39,6 @@
     };
     bash = {
       enable = true;
-      bashrcExtra = ''
-        if SSH_AGENT_PID=$(pgrep -u "$USER" ssh-agent); then
-            export SSH_AGENT_PID SSH_AUTH_SOCK="$HOME/.ssh/.agent"
-        else
-            rm -f "$HOME/.ssh/.agent"
-            eval $(ssh-agent -a "$HOME/.ssh/.agent")
-            fd -tf -E 'id_*.pub' 'id_*' "$HOME/.ssh/" -x ssh-add
-        fi
-      '';
       initExtra = ''
         export TERM='xterm-256color'
         export PS1='\u:\w\$ '
@@ -128,9 +119,9 @@
     wget which
     yt-dlp
   ] ++ [
-    acpitool
     chromium
     dmenu dunst
+    hsetroot
     libnotify
     pavucontrol procps
     redshift
@@ -155,7 +146,6 @@
       ".local/bin/acpi.sh".source = ln "/etc/nixos/repti/sk4zuzu/.local/bin/acpi.sh";
       ".local/bin/asd".source = ln "/etc/nixos/repti/sk4zuzu/.local/bin/asd";
       ".local/bin/ead".source = ln "/etc/nixos/repti/sk4zuzu/.local/bin/ead";
-      ".local/bin/slock.sh".source = ln "/etc/nixos/repti/sk4zuzu/.local/bin/slock.sh";
       ".local/bin/xrandr.sh".source = ln "/etc/nixos/repti/sk4zuzu/.local/bin/xrandr.sh";
       ".local/share/fonts".source = ln "/etc/nixos/repti/sk4zuzu/.local/share/fonts";
       ".xmonad/xmonad.hs".source = ln "/etc/nixos/repti/sk4zuzu/.xmonad/xmonad.hs";

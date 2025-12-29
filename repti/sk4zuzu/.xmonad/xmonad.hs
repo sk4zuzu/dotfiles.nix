@@ -63,7 +63,7 @@ myKeys = customKeys delkeys inskeys
                                                   , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
             <+> [((modm .|. controlMask, xK_Return), windows W.swapMaster)]
             <+> [((modm .|. controlMask, xK_space), sendMessage NextLayout)]
-            <+> [((mod4Mask, xK_l), spawn "slock.sh")]
+            <+> [((mod4Mask, xK_l), spawn "slock")]
             <+> M.toList (planeKeys (modm .|. controlMask) (Lines 4) Circular)
 
 

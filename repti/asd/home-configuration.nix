@@ -10,11 +10,12 @@
     bash = {
       enable = true;
       bashrcExtra = ''
-        if SSH_AGENT_PID=$(pgrep -u "$USER" ssh-agent); then
+        SSH_AGENT_PID="$(pgrep -u "$USER" ssh-agent)"
+        if [[ -n "$SSH_AGENT_PID" ]]; then
             export SSH_AGENT_PID SSH_AUTH_SOCK="$HOME/.ssh/.agent"
         else
             rm -f "$HOME/.ssh/.agent"
-            eval $(ssh-agent -a "$HOME/.ssh/.agent")
+            eval "$(ssh-agent -a "$HOME/.ssh/.agent")"
             fd -tf -E 'id_*.pub' 'id_*' "$HOME/.ssh/" -x ssh-add
         fi
       '';

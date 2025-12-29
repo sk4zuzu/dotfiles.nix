@@ -1,21 +1,28 @@
 #!/usr/bin/env bash
 
-: ${INTERVAL:=60}
-: ${TIMEOUT:=59000}
-: ${THRESHOLD:=10}
+: "${BAT:=0}"
+: "${STATUS_PATH:=/sys/class/power_supply/BAT$BAT/status}"
+: "${CAPACITY_PATH:=/sys/class/power_supply/BAT$BAT/capacity}"
 
-set -o errexit -o nounset -o pipefail
+: "${INTERVAL:=60}"
+: "${TIMEOUT:=59000}"
+: "${THRESHOLD:=10}"
+
+set -o errexit
+
+# Assert that all required status files are readable.
+[[ -r "$STATUS_PATH" ]] && [[ -r "$CAPACITY_PATH" ]]
 
 # Assert that all required tools are installed.
-which acpitool head tr grep notify-send dunst sleep
+type -p notify-send sleep
 
 while :; do
-    # Extract and clean (tr -s ' ' squeezes multiple spaces) the #1 battery status and skip if not discharging.
-    if OUTPUT=$(acpitool -b | head -n1 | tr -s ' ') && [[ "$OUTPUT" == *Discharging* ]]; then
-        # Extract the #1 battery percentage and skip if below threshold.
-        if PERCENT=$(grep -m1 -oP '\d+(?=\.\d+%)' <<< "$OUTPUT") && [[ "$PERCENT" -lt "$THRESHOLD" ]]; then
+    # Get battery status and skip if not discharging.
+    if read -r STATUS < "$STATUS_PATH" && [[ "$STATUS" =~ (^|[[:space:]])Discharging([[:space:]]|$) ]]; then
+        # Get battery capacity (%) and skip if below threshold.
+        if read -r CAPACITY < "$CAPACITY_PATH" && [[ "$CAPACITY" -lt "$THRESHOLD" ]]; then
             # Send notification to the dunst daemon
-            notify-send --urgency critical --expire-time "$TIMEOUT" "$OUTPUT"
+            notify-send --urgency critical --expire-time "$TIMEOUT" "BAT #$BAT $STATUS $CAPACITY%"
         fi
     fi
     sleep "$INTERVAL"
