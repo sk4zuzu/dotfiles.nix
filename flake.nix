@@ -7,13 +7,18 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    rustaceanvim = {
+      url = "github:mrcjkb/rustaceanvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  outputs = { nixpkgs, home-manager, ... }: {
+  outputs = { nixpkgs, home-manager, rustaceanvim, ... }: {
     nixosConfigurations = {
       repti = nixpkgs.lib.nixosSystem {
         modules = [
           ./repti/configuration.nix
           home-manager.nixosModules.home-manager {
+            home-manager.extraSpecialArgs = { inherit rustaceanvim; };
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.asd = ./repti/asd/home-configuration.nix;
