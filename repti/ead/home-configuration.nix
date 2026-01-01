@@ -46,8 +46,9 @@
             cd ~/_git/
           '';
         shellAliases = {
+          b = "bash";
           g = "git";
-          hrep = "history | grep";
+          hrg = "history | rg";
           m = "make";
           root = "doas -s";
           vim = "nvim";
