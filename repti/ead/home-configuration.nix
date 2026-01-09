@@ -109,7 +109,7 @@
             },
           }
           vim.api.nvim_create_autocmd('FileType', {
-            pattern = { 'bash', 'json', 'make', 'markdown', 'rust', 'toml', 'yaml' },
+            pattern = { 'bash', 'json', 'make', 'markdown', 'ruby', 'rust', 'toml', 'yaml' },
             callback = function() vim.treesitter.start() end,
           })
           vim.cmd [[source /etc/nixos/repti/ead/.config/nvim/init.vim]]
@@ -121,6 +121,7 @@
             tree-sitter-json
             tree-sitter-make
             tree-sitter-markdown
+            tree-sitter-ruby
             tree-sitter-rust
             tree-sitter-toml
             tree-sitter-yaml
@@ -142,27 +143,32 @@
         };
       };
     };
-    home.packages = with pkgs; [
-      bat
-      curl
-      fd
-      gnumake
-      igrep
-      jq
-      patch procps procs
-      ripgrep
-      which
-    ] ++ [
-      cargo
-      gcc
-      lldb
-      nodejs
-      rust-analyzer rustc
-      tree-sitter
-    ] ++ [
-      rustaceanvim-pkgs.codelldb
-      rustaceanvim-pkgs.rustaceanvim
-    ];
+    home.packages =
+      let
+        ruby-with-pkgs = pkgs.ruby.withPackages (ruby-pkgs: with ruby-pkgs; [
+          rspec
+        ]);
+      in with pkgs; [
+        bat
+        curl
+        fd
+        gnumake
+        igrep
+        jq
+        patch procps procs
+        ripgrep ruby-with-pkgs
+        which
+      ] ++ [
+        cargo
+        gcc
+        lldb
+        nodejs
+        rust-analyzer rustc
+        tree-sitter
+      ] ++ [
+        rustaceanvim-pkgs.codelldb
+        rustaceanvim-pkgs.rustaceanvim
+      ];
     home.file =
       let
         ln = config.lib.file.mkOutOfStoreSymlink;
